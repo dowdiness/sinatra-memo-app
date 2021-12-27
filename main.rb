@@ -1,8 +1,10 @@
 require 'sinatra'
 require 'sinatra/reloader'
+require './db'
 
 get '/' do
-  erb :index
+  @memo_data = memo_decode 'path'
+  erb :index, locals: { memo: @memo_data }
 end
 
 get '/new' do
