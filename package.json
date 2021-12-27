@@ -1,0 +1,15 @@
+{
+  "name": "sinatra-memo-app",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "tailwind:dev": "npx tailwindcss -i ./public/css/tailwind.css -o ./public/css/output.css --watch",
+    "tailwind:build": "npx tailwindcss -i ./public/css/tailwind.css -o ./public/css/output.css --minify"
+  },
+  "author": "Koji Ishimoto",
+  "license": "ISC",
+  "devDependencies": {
+    "tailwindcss": "^3.0.7"
+  }
+}
