@@ -1,0 +1,5 @@
+.DS_STORE
+/Gemfile.lock
+/vendor
+node_modules
+package-lock.json
