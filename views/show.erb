@@ -1,1 +1,10 @@
+<div class="relative focus-within:ring-2 focus-within:ring-indigo-500 p-4">
+  <h3 class="text-sm font-semibold text-gray-800">
+    <%= @memo["title"] %>
+  </h3>
+  <p class="mt-1 text-sm text-gray-600 line-clamp-2">
+    <%= @memo["content"] %>
+  </p>
+</div>
+
 <%= render(:erb, :'shared/links') %>

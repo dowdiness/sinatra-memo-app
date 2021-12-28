@@ -17,7 +17,10 @@ get '/edit' do
   erb :edit
 end
 
-get '/show' do
+# show
+get '/*' do |title|
+  p db
+  @memo = db.get_by_title title
   erb :show
 end
 
