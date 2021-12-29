@@ -35,3 +35,7 @@ get '/*' do |title|
   @memo = db.get_by_title title
   erb :show
 end
+
+not_found do
+  erb :not_found
+end
