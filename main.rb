@@ -22,6 +22,11 @@ post '/new' do
   redirect '/'
 end
 
+get '/edit/*' do |title|
+  @memo = db.get_by_title title
+  erb :edit
+end
+
 delete '/reset' do
   db.reset
   @data = db.data
@@ -29,14 +34,16 @@ delete '/reset' do
   redirect '/'
 end
 
-get '/edit' do
-  erb :edit
-end
-
 # show
 get '/*' do |title|
   @memo = db.get_by_title title
   erb :show
+end
+
+put '/*' do |title|
+  db.update_by_title(title, { "title" => params[:title], "content" => params[:content] })
+  session[:message] = "#{title}を#{params[:title]}へ更新しました"
+  redirect '/'
 end
 
 delete '/*' do |title|

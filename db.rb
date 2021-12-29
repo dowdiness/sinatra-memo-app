@@ -43,6 +43,20 @@ class DB
     raise "#{title}というタイトルのメモは存在しません"
   end
 
+  #todo エラー処理
+  def update_by_title(title, new_memo)
+    @data["memos"].map! do |memo|
+      if memo["title"] == title
+        new_memo
+      else
+        memo
+      end
+    end
+    File.open(@@data_path, 'w') do |file|
+      JSON.dump(@data, file)
+    end
+  end
+
   def delete_by_title title
     is_success = @data["memos"].filter! do |memo|
       memo["title"] != title
