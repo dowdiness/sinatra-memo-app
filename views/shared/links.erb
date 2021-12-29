@@ -1,9 +1,8 @@
-<div class="flex space-x-4">
-  <a href="/">Top</a>
-  <a href="/new">New</a>
+<div class="flex flex-col space-y-4 sm:space-y-0 sm:space-x-6 sm:flex-row">
+  <a href="/" class="tracking-widest text-gray-900 sm:text-xl">Top</a>
+  <a href="/new" class="tracking-widest text-gray-900 sm:text-xl">新規メモを作る</a>
   <form method="post" name="reset" action="reset">
     <input type="hidden" name="_method" value="DELETE">
-    <a href="javascript:reset.submit()">Reset</a>
+    <a href="javascript:reset.submit()" class="tracking-widest text-gray-900 sm:text-xl">メモをリセットする</a>
   </form>
-  <a href="/edit">Edit</a>
 </div>
