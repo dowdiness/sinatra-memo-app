@@ -29,6 +29,13 @@ class DB
     end
   end
 
+  def add_memo memo
+    @data["memos"] << memo
+    File.open(@@data_path, 'w') do |file|
+      JSON.dump(@data, file)
+    end
+  end
+
   def get_by_title title
     @data["memos"].each do |memo|
       return memo if memo["title"] == title
@@ -36,11 +43,14 @@ class DB
     raise "#{title}というタイトルのメモは存在しません"
   end
 
-  def add_memo memo
-    @data["memos"] << memo
+  def delete_by_title title
+    is_success = @data["memos"].filter! do |memo|
+      memo["title"] != title
+    end
     File.open(@@data_path, 'w') do |file|
       JSON.dump(@data, file)
     end
+    is_success
   end
 
   def reset

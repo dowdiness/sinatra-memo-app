@@ -2,6 +2,8 @@ require 'sinatra'
 require 'sinatra/reloader'
 require './db'
 
+enable :sessions
+
 db = DB.new
 
 get '/' do
@@ -23,6 +25,7 @@ end
 delete '/reset' do
   db.reset
   @data = db.data
+  session[:message] = "メモを全て削除しました"
   redirect '/'
 end
 
@@ -34,6 +37,15 @@ end
 get '/*' do |title|
   @memo = db.get_by_title title
   erb :show
+end
+
+delete '/*' do |title|
+  session[:message] = if db.delete_by_title(title).nil?
+    "メモが見つかりませんでした"
+  else
+    "#{title}を削除しました"
+  end
+  redirect '/'
 end
 
 not_found do
