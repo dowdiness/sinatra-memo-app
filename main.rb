@@ -13,17 +13,18 @@ get '/new' do
   erb :new
 end
 
+delete '/reset' do
+  db.reset
+  @data = db.data
+  redirect '/'
+end
+
 get '/edit' do
   erb :edit
 end
 
 # show
 get '/*' do |title|
-  p db
   @memo = db.get_by_title title
   erb :show
-end
-
-get '/hello/*' do |name|
-  "hello #{name}. how are you?"
 end

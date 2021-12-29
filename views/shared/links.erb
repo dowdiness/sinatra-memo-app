@@ -1,6 +1,9 @@
 <div class="flex space-x-4">
   <a href="/">Top</a>
   <a href="/new">New</a>
-  <a href="/show">Show</a>
+  <form method="post" name="reset" action="reset">
+    <input type="hidden" name="_method" value="DELETE">
+    <a href="javascript:reset.submit()">Reset</a>
+  </form>
   <a href="/edit">Edit</a>
 </div>
