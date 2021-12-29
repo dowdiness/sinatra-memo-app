@@ -27,6 +27,10 @@ get '/edit/*' do |title|
   erb :edit
 end
 
+get '/reset' do
+  erb :reset
+end
+
 delete '/reset' do
   db.reset
   @data = db.data
