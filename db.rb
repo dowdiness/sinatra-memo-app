@@ -36,6 +36,13 @@ class DB
     raise "#{title}というタイトルのメモは存在しません"
   end
 
+  def add_memo memo
+    @data["memos"] << memo
+    File.open(@@data_path, 'w') do |file|
+      JSON.dump(@data, file)
+    end
+  end
+
   def reset
     File.open(@@data_path, 'w') do |file|
       @data = { "memos" => [] }
