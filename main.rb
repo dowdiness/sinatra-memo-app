@@ -59,7 +59,11 @@ end
 get '/:title' do
   title = h(params[:title])
   @memo = db.get_by_title title
-  erb :show
+  if @memo.nil?
+    halt 404
+  else
+    erb :show
+  end
 end
 
 put '/:old_title' do
