@@ -1,6 +1,7 @@
 require 'sinatra'
 require 'sinatra/reloader'
 require './extensions/html_escape'
+require './extensions/validation'
 require './db'
 
 enable :sessions
@@ -18,6 +19,18 @@ get '/new' do
 end
 
 post '/new' do
+  begin
+    validates do
+      params do
+        required(:title).filled(:string)
+        required(:content).filled(:string)
+      end
+    end
+  rescue => e
+    # Arrayにして処理したい
+    session[:message] = e.result.messages.first
+    redirect '/'
+  end
   title = h(params[:title])
   content = h(params[:content])
   db.add_memo({ "title" => title, "content" => content })
@@ -50,6 +63,18 @@ get '/*' do |title|
 end
 
 put '/*' do |title|
+  begin
+    validates do
+      params do
+        required(:title).filled(:string)
+        required(:content).filled(:string)
+      end
+    end
+  rescue => e
+    # Arrayにして処理したい
+    session[:message] = e.result.messages.first
+    redirect '/'
+  end
   title = h(title)
   new_title = h(params[:title])
   new_content = h(params[:content])
