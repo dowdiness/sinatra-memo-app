@@ -1,5 +1,6 @@
 require 'sinatra'
 require 'sinatra/reloader'
+require './extensions/html_escape'
 require './db'
 
 enable :sessions
@@ -17,13 +18,16 @@ get '/new' do
 end
 
 post '/new' do
-  db.add_memo({ "title" => params[:title], "content" => params[:content] })
-  session[:message] = "#{params[:title]}の保存に成功しました"
+  title = h(params[:title])
+  content = h(params[:content])
+  db.add_memo({ "title" => title, "content" => content })
+  session[:message] = "#{title}の保存に成功しました"
   redirect '/'
 end
 
 get '/edit/*' do |title|
-  @memo = db.get_by_title title
+  title = h(title)
+  @memo = db.get_by_title h(title)
   erb :edit
 end
 
@@ -40,17 +44,22 @@ end
 
 # show
 get '/*' do |title|
-  @memo = db.get_by_title title
+  title = h(title)
+  @memo = db.get_by_title h(title)
   erb :show
 end
 
 put '/*' do |title|
-  db.update_by_title(title, { "title" => params[:title], "content" => params[:content] })
-  session[:message] = "#{title}を#{params[:title]}へ更新しました"
+  title = h(title)
+  new_title = h(params[:title])
+  new_content = h(params[:content])
+  db.update_by_title(title, { "title" => new_title, "content" => new_content })
+  session[:message] = "#{title}を#{new_title}へ更新しました"
   redirect '/'
 end
 
 delete '/*' do |title|
+  title = h(title)
   session[:message] = if db.delete_by_title(title).nil?
     "メモが見つかりませんでした"
   else
