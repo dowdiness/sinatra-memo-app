@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'sinatra'
 require 'sinatra/reloader'
 require './extensions/html_escape'
@@ -26,14 +28,14 @@ post '/new' do
         required(:content).filled(:string)
       end
     end
-  rescue => e
+  rescue Sinatra::Validation::InvalidParameterError => e
     # Arrayにして処理したい
     session[:message] = e.result.messages.first
     redirect '/'
   end
   title = h(params[:title])
   content = h(params[:content])
-  db.add_memo({ "title" => title, "content" => content })
+  db.add_memo({ 'title' => title, 'content' => content })
   session[:message] = "#{title}の保存に成功しました"
   redirect '/'
 end
@@ -51,7 +53,7 @@ end
 delete '/reset' do
   db.reset
   @data = db.data
-  session[:message] = "メモを全て削除しました"
+  session[:message] = 'メモを全て削除しました'
   redirect '/'
 end
 
@@ -75,7 +77,7 @@ put '/:old_title' do
         required(:content).filled(:string)
       end
     end
-  rescue => e
+  rescue Sinatra::Validation::InvalidParameterError => e
     # Arrayにして処理したい
     session[:message] = e.result.messages.first
     redirect '/'
@@ -83,7 +85,7 @@ put '/:old_title' do
   old_title = h(params[:old_title])
   new_title = h(params[:new_title])
   new_content = h(params[:content])
-  db.update_by_title(old_title, { "title" => new_title, "content" => new_content })
+  db.update_by_title(old_title, { 'title' => new_title, 'content' => new_content })
   session[:message] = "#{old_title}を#{new_title}へ更新しました"
   redirect '/'
 end
@@ -91,10 +93,10 @@ end
 delete '/:title' do |title|
   title = h(title)
   session[:message] = if db.delete_by_title(title).nil?
-    "メモが見つかりませんでした"
-  else
-    "#{title}を削除しました"
-  end
+                        'メモが見つかりませんでした'
+                      else
+                        "#{title}を削除しました"
+                      end
   redirect '/'
 end
 
