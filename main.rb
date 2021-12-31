@@ -38,9 +38,9 @@ post '/new' do
   redirect '/'
 end
 
-get '/edit/*' do |title|
-  title = h(title)
-  @memo = db.get_by_title h(title)
+get '/:title/edit' do
+  title = h(params[:title])
+  @memo = db.get_by_title title
   erb :edit
 end
 
@@ -56,17 +56,18 @@ delete '/reset' do
 end
 
 # show
-get '/*' do |title|
-  title = h(title)
-  @memo = db.get_by_title h(title)
+get '/:title' do
+  title = h(params[:title])
+  @memo = db.get_by_title title
   erb :show
 end
 
-put '/*' do |title|
+put '/:old_title' do
   begin
     validates do
       params do
-        required(:title).filled(:string)
+        required(:old_title).filled(:string)
+        required(:new_title).filled(:string)
         required(:content).filled(:string)
       end
     end
@@ -75,15 +76,15 @@ put '/*' do |title|
     session[:message] = e.result.messages.first
     redirect '/'
   end
-  title = h(title)
-  new_title = h(params[:title])
+  old_title = h(params[:old_title])
+  new_title = h(params[:new_title])
   new_content = h(params[:content])
-  db.update_by_title(title, { "title" => new_title, "content" => new_content })
-  session[:message] = "#{title}を#{new_title}へ更新しました"
+  db.update_by_title(old_title, { "title" => new_title, "content" => new_content })
+  session[:message] = "#{old_title}を#{new_title}へ更新しました"
   redirect '/'
 end
 
-delete '/*' do |title|
+delete '/:title' do |title|
   title = h(title)
   session[:message] = if db.delete_by_title(title).nil?
     "メモが見つかりませんでした"
