@@ -26,33 +26,41 @@ class DB
     end
   end
 
-  def get_by_title(title)
+  def find_by(id)
     @data['memos'].each do |memo|
-      return memo if memo['title'] == title
+      return memo if memo['id'] == id
     end
     nil
   end
 
-  # TODO: エラー処理
-  def update_by_title(title, new_memo)
+  def update_by(id, new_memo)
+    is_updated = false
     @data['memos'].map! do |memo|
-      if memo['title'] == title
+      if memo['id'] == id
+        is_updated = true
         new_memo
       else
         memo
       end
     end
-    File.open(@data_path, 'w') do |file|
-      JSON.dump(@data, file)
+    unless is_updated
+      nil
+    else
+      File.open(@data_path, 'w') do |file|
+        JSON.dump(@data, file)
+      end
+      @data
     end
   end
 
-  def delete_by_title(title)
+  def delete_by(id)
     is_success = @data['memos'].filter! do |memo|
-      memo['title'] != title
+      memo['id'] != id
     end
-    File.open(@data_path, 'w') do |file|
-      JSON.dump(@data, file)
+    unless is_success.nil?
+      File.open(@data_path, 'w') do |file|
+        JSON.dump(@data, file)
+      end
     end
     is_success
   end

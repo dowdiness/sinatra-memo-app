@@ -2,6 +2,7 @@
 
 require 'sinatra'
 require 'sinatra/reloader'
+require 'securerandom'
 require './extensions/html_escape'
 require './extensions/validation'
 require './db'
@@ -35,15 +36,19 @@ post '/new' do
   end
   title = h(params[:title])
   content = h(params[:content])
-  db.add_memo({ 'title' => title, 'content' => content })
+  db.add_memo({ 'id' => SecureRandom.uuid, 'title' => title, 'content' => content })
   session[:message] = "#{title}の保存に成功しました"
   redirect '/'
 end
 
-get '/:title/edit' do
-  title = h(params[:title])
-  @memo = db.get_by_title title
-  erb :edit
+get '/:id/edit' do
+  id = h(params[:id])
+  @memo = db.find_by id
+  if @memo.nil?
+    halt 404
+  else
+    erb :edit
+  end
 end
 
 get '/reset' do
@@ -58,9 +63,9 @@ delete '/reset' do
 end
 
 # show
-get '/:title' do
-  title = h(params[:title])
-  @memo = db.get_by_title title
+get '/:id' do
+  id = h(params[:id])
+  @memo = db.find_by id
   if @memo.nil?
     halt 404
   else
@@ -68,11 +73,11 @@ get '/:title' do
   end
 end
 
-put '/:old_title' do
+put '/:id' do
   begin
     validates do
       params do
-        required(:old_title).filled(:string)
+        required(:id).value(:filled?, :uuid_v4?)
         required(:new_title).filled(:string)
         required(:content).filled(:string)
       end
@@ -82,20 +87,24 @@ put '/:old_title' do
     session[:message] = e.result.messages.first
     redirect '/'
   end
-  old_title = h(params[:old_title])
+  id = h(params[:id])
   new_title = h(params[:new_title])
   new_content = h(params[:content])
-  db.update_by_title(old_title, { 'title' => new_title, 'content' => new_content })
-  session[:message] = "#{old_title}を#{new_title}へ更新しました"
+  session[:message] = if db.update_by(id, { 'id' => id, 'title' => new_title, 'content' => new_content }).nil?
+                        'メモの更新に失敗しました'
+                      else
+                        "#{id}を更新しました"
+                      end
   redirect '/'
 end
 
-delete '/:title' do |title|
-  title = h(title)
-  session[:message] = if db.delete_by_title(title).nil?
+delete '/:id' do
+  id = h(params[:id])
+
+  session[:message] = if db.delete_by(id).nil?
                         'メモが見つかりませんでした'
                       else
-                        "#{title}を削除しました"
+                        "#{id}を削除しました"
                       end
   redirect '/'
 end

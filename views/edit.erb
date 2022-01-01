@@ -1,5 +1,5 @@
 <h2 class="text-xl font-bold tracking-wider text-gray-900 sm:text-2xl">メモの編集</h2>
-<form action="/<%= @memo["title"] %>" method="POST" class="relative">
+<form action="/<%= @memo["id"] %>" method="POST" class="relative">
   <input type="hidden" name="_method" value="PUT">
   <div class="overflow-hidden border border-gray-300 rounded-lg shadow-sm focus-within:border-indigo-500 focus-within:ring-1 focus-within:ring-indigo-500">
     <label for="new_title" class="sr-only">タイトル</label>
