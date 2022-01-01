@@ -43,7 +43,7 @@ end
 
 get '/:id/edit' do
   id = h(params[:id])
-  @memo = db.find_by id
+  @memo = db.find id
   if @memo.nil?
     halt 404
   else
@@ -65,7 +65,7 @@ end
 # show
 get '/:id' do
   id = h(params[:id])
-  @memo = db.find_by id
+  @memo = db.find id
   if @memo.nil?
     halt 404
   else
@@ -90,7 +90,7 @@ put '/:id' do
   id = h(params[:id])
   new_title = h(params[:new_title])
   new_content = h(params[:content])
-  session[:message] = if db.update_by(id, { 'id' => id, 'title' => new_title, 'content' => new_content }).nil?
+  session[:message] = if db.update(id, { 'id' => id, 'title' => new_title, 'content' => new_content }).nil?
                         'メモの更新に失敗しました'
                       else
                         "#{id}を更新しました"
@@ -101,7 +101,7 @@ end
 delete '/:id' do
   id = h(params[:id])
 
-  session[:message] = if db.delete_by(id).nil?
+  session[:message] = if db.delete(id).nil?
                         'メモが見つかりませんでした'
                       else
                         "#{id}を削除しました"

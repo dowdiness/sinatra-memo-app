@@ -26,14 +26,14 @@ class DB
     end
   end
 
-  def find_by(id)
+  def find(id)
     @data['memos'].each do |memo|
       return memo if memo['id'] == id
     end
     nil
   end
 
-  def update_by(id, new_memo)
+  def update(id, new_memo)
     is_updated = false
     @data['memos'].map! do |memo|
       if memo['id'] == id
@@ -53,7 +53,7 @@ class DB
     end
   end
 
-  def delete_by(id)
+  def delete(id)
     is_success = @data['memos'].filter! do |memo|
       memo['id'] != id
     end
