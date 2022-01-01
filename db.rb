@@ -5,7 +5,7 @@ require 'json'
 class DB
   attr_reader :data
 
-  def initialize(path = './data/data.json')
+  def initialize(path = '.data.json')
     @data_path = path unless path.nil?
     if File.exist? @data_path
       File.open(path) do |file|
