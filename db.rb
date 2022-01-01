@@ -43,14 +43,12 @@ class DB
         memo
       end
     end
-    unless is_updated
-      nil
-    else
-      File.open(@data_path, 'w') do |file|
-        JSON.dump(@data, file)
-      end
-      @data
+    return nil unless is_updated
+
+    File.open(@data_path, 'w') do |file|
+      JSON.dump(@data, file)
     end
+    @data
   end
 
   def delete(id)
