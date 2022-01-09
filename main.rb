@@ -20,7 +20,7 @@ get '/new' do
   erb :new
 end
 
-post '/new' do
+post '/' do
   begin
     validates do
       params do
