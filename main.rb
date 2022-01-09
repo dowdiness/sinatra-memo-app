@@ -3,7 +3,6 @@
 require 'sinatra'
 require 'sinatra/reloader'
 require 'securerandom'
-require './extensions/html_escape'
 require './extensions/validation'
 require './db'
 
@@ -34,15 +33,15 @@ post '/new' do
     session[:message] = e.result.messages.first
     redirect '/'
   end
-  title = h(params[:title])
-  content = h(params[:content])
+  title = params[:title]
+  content = params[:content]
   db.add_memo({ 'id' => SecureRandom.uuid, 'title' => title, 'content' => content })
   session[:message] = "#{title}の保存に成功しました"
   redirect '/'
 end
 
 get '/:id/edit' do
-  id = h(params[:id])
+  id = params[:id]
   @memo = db.find id
   if @memo.nil?
     halt 404
@@ -64,7 +63,7 @@ end
 
 # show
 get '/:id' do
-  id = h(params[:id])
+  id = params[:id]
   @memo = db.find id
   if @memo.nil?
     halt 404
@@ -87,9 +86,9 @@ put '/:id' do
     session[:message] = e.result.messages.first
     redirect '/'
   end
-  id = h(params[:id])
-  new_title = h(params[:new_title])
-  new_content = h(params[:content])
+  id = params[:id]
+  new_title = params[:new_title]
+  new_content = params[:content]
   session[:message] = if db.update(id, { 'id' => id, 'title' => new_title, 'content' => new_content }).nil?
                         'メモの更新に失敗しました'
                       else
@@ -99,7 +98,7 @@ put '/:id' do
 end
 
 delete '/:id' do
-  id = h(params[:id])
+  id = params[:id]
 
   session[:message] = if db.delete(id).nil?
                         'メモが見つかりませんでした'

@@ -1,41 +1,52 @@
 # frozen_string_literal: true
 
 require 'json'
+require 'erb'
 
 class DB
-  attr_reader :data
+  def data
+    { "memos" => @_data['memos'].map { |memo| escape memo }}
+  end
+
+  def escape(data)
+    {
+      'id' => data['id'],
+      'title' => ERB::Util.html_escape(data['title']),
+      'content' => ERB::Util.html_escape(data['content'])
+    }
+  end
 
   def initialize(path = '.data.json')
     @data_path = path unless path.nil?
     if File.exist? @data_path
       File.open(path) do |file|
-        @data = JSON.parse(file.read)
+        @_data = JSON.parse(file.read)
       end
     else
       File.open(path, 'w') do |file|
-        @data = { 'memos' => [] }
+        @_data = { 'memos' => [] }
         JSON.dump(@data, file)
       end
     end
   end
 
   def add_memo(memo)
-    @data['memos'] << memo
+    @_data['memos'] << memo
     File.open(@data_path, 'w') do |file|
-      JSON.dump(@data, file)
+      JSON.dump(@_data, file)
     end
   end
 
   def find(id)
-    @data['memos'].each do |memo|
-      return memo if memo['id'] == id
+    @_data['memos'].each do |memo|
+      return escape(memo) if memo['id'] == id
     end
     nil
   end
 
   def update(id, new_memo)
     is_updated = false
-    @data['memos'].map! do |memo|
+    @_data['memos'].map! do |memo|
       if memo['id'] == id
         is_updated = true
         new_memo
@@ -46,18 +57,18 @@ class DB
     return nil unless is_updated
 
     File.open(@data_path, 'w') do |file|
-      JSON.dump(@data, file)
+      JSON.dump(@_data, file)
     end
-    @data
+    escape(@_data)
   end
 
   def delete(id)
-    is_success = @data['memos'].filter! do |memo|
+    is_success = @_data['memos'].filter! do |memo|
       memo['id'] != id
     end
     unless is_success.nil?
       File.open(@data_path, 'w') do |file|
-        JSON.dump(@data, file)
+        JSON.dump(@_data, file)
       end
     end
     is_success
@@ -65,8 +76,8 @@ class DB
 
   def reset
     File.open(@data_path, 'w') do |file|
-      @data = { 'memos' => [] }
-      JSON.dump(@data, file)
+      @_data = { 'memos' => [] }
+      JSON.dump(@_data, file)
     end
   end
 end
