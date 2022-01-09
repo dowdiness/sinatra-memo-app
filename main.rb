@@ -35,7 +35,7 @@ post '/new' do
   end
   title = params[:title]
   content = params[:content]
-  db.add_memo({ 'id' => SecureRandom.uuid, 'title' => title, 'content' => content })
+  db.add_memo({ id: SecureRandom.uuid, title: title, content: content })
   session[:message] = "#{title}の保存に成功しました"
   redirect '/'
 end
@@ -89,7 +89,7 @@ put '/:id' do
   id = params[:id]
   new_title = params[:new_title]
   new_content = params[:content]
-  session[:message] = if db.update(id, { 'id' => id, 'title' => new_title, 'content' => new_content }).nil?
+  session[:message] = if db.update(id, { id: id, title: new_title, content: new_content }).nil?
                         'メモの更新に失敗しました'
                       else
                         "#{id}を更新しました"
