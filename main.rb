@@ -4,6 +4,7 @@ require 'sinatra'
 require 'sinatra/reloader'
 require 'securerandom'
 require './extensions/validation'
+require './extensions/html_escape'
 require './db'
 
 enable :sessions

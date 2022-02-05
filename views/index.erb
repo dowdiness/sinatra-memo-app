@@ -52,13 +52,13 @@
             <div class="flex-1 min-w-0">
               <a href="/<%= memo[:id] %>" class="block focus:outline-none">
                 <span class="absolute inset-0" aria-hidden="true"></span>
-                <p class="text-xl font-semibold text-gray-900 truncate"><%= memo[:title] %></p>
+                <p class="text-xl font-semibold text-gray-900 truncate"><%= h(memo[:title]) %></p>
               </a>
             </div>
           </div>
           <div class="mt-1">
             <p class="text-gray-600 line-clamp-4">
-              <%= memo[:content] %>
+              <%= h(memo[:content]) %>
             </p>
           </div>
         </li>
