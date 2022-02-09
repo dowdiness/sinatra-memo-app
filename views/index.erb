@@ -1,0 +1,68 @@
+<% if @message %>
+  <div class="p-4 rounded-md bg-green-50">
+    <div class="flex">
+      <div class="flex-shrink-0">
+        <!-- Heroicon name: solid/check-circle -->
+        <svg class="w-5 h-5 text-green-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+        </svg>
+      </div>
+      <div class="ml-3">
+        <h2 class="font-medium text-green-800">
+          <%= @message %>
+        </h2>
+      </div>
+    </div>
+  </div>
+<% end %>
+<div class="flow-root">
+  <ul role="list" class="divide-y divide-gray-200">
+    <% if @data[:memos].empty? %>
+      <li class="my-8 text-center">
+        <h2 class="mt-2 text-2xl font-medium text-gray-900">メモが存在しません</h2>
+        <div class="mt-6">
+          <a href="/new" class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+            <!-- Heroicon name: solid/plus -->
+            <svg class="w-5 h-5 mr-2 -ml-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+              <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+            </svg>
+            メモを追加する
+          </a>
+        </div>
+      </li>
+    <% else %>
+      <div class="relative flex flex-col items-center justify-center pb-12 mb-6 sm:pb-0 sm:flex-row">
+        <div>
+          <a href="/new" class="inline-flex items-center px-4 py-2 text-sm font-medium text-white transition-colors duration-300 bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+          <!-- Heroicon name: solid/plus -->
+            <svg class="w-5 h-5 mr-2 -ml-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+              <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+            </svg>
+            メモを追加する
+          </a>
+        </div>
+        <div class="absolute bottom-0 right-0">
+          <a href="/reset" class="text-sm tracking-widest text-gray-500 underline transition-colors hover:text-red-600">メモをリセットする</a>
+        </div>
+      </div>
+
+      <% @data[:memos].each do |memo| %>
+        <li class="relative px-4 py-5 transition-colors bg-white hover:bg-gray-50 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-600">
+          <div class="flex space-x-3 justify-left">
+            <div class="flex-1 min-w-0">
+              <a href="/<%= memo[:id] %>" class="block focus:outline-none">
+                <span class="absolute inset-0" aria-hidden="true"></span>
+                <p class="text-xl font-semibold text-gray-900 truncate"><%= h(memo[:title]) %></p>
+              </a>
+            </div>
+          </div>
+          <div class="mt-1">
+            <p class="text-gray-600 line-clamp-4">
+              <%= h(memo[:content]) %>
+            </p>
+          </div>
+        </li>
+      <% end %>
+    <% end %>
+  </ul>
+</div>
