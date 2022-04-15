@@ -6,6 +6,8 @@ Simple note taking application built by Sinatra
 
 Make sure you already installed [rbenv](https://github.com/rbenv/rbenv)
 
+Please make a database whose name is sinatra_memo by PostgreSQL before you start runnning this application.
+
 ```bash
 rbenv install 3.0.3
 
