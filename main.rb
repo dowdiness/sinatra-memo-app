@@ -36,8 +36,12 @@ post '/' do
   end
   title = params[:title]
   content = params[:content]
-  db.add_memo({ id: SecureRandom.uuid, title: title, content: content })
-  session[:message] = "#{title}の保存に成功しました"
+  is_sccuess = db.add_memo({ id: SecureRandom.uuid, title: title, content: content })
+  if is_sccuess == false
+    session[:message] = "#{title}の保存に失敗しました"
+  else
+    session[:message] = "#{title}の保存に成功しました"
+  end
   redirect '/'
 end
 
@@ -56,9 +60,13 @@ get '/reset' do
 end
 
 delete '/reset' do
-  db.reset
-  @data = db.data
-  session[:message] = 'メモを全て削除しました'
+  is_success = db.reset
+  if is_success
+    @data = db.data
+    session[:message] = 'メモを全て削除しました'
+  else
+    session[:message] = 'メモのリセットに失敗しました'
+  end
   redirect '/'
 end
 
@@ -90,7 +98,7 @@ put '/:id' do
   id = params[:id]
   new_title = params[:new_title]
   new_content = params[:content]
-  session[:message] = if db.update(id, { id: id, title: new_title, content: new_content }).nil?
+  session[:message] = if db.update(id, { id: id, title: new_title, content: new_content }) == false
                         'メモの更新に失敗しました'
                       else
                         "#{id}を更新しました"
@@ -101,7 +109,7 @@ end
 delete '/:id' do
   id = params[:id]
 
-  session[:message] = if db.delete(id).nil?
+  session[:message] = if db.delete(id) == false
                         'メモが見つかりませんでした'
                       else
                         "#{id}を削除しました"

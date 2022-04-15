@@ -15,3 +15,5 @@ group :development do
 end
 
 gem 'dry-validation', '~> 1.7'
+
+gem 'pg'

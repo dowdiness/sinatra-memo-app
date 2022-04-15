@@ -1,29 +1,43 @@
 # frozen_string_literal: true
 
 require 'json'
+require 'pg'
 
 class DB
   attr_reader :data
 
-  def initialize(path = '.data.json')
-    @data_path = path unless path.nil?
-    if File.exist? @data_path
-      File.open(path) do |file|
-        @data = JSON.parse(file.read, symbolize_names: true)
+  def initialize(dbname = 'sinatra_memo')
+    @data = { memos: [] }
+    begin
+      @conn = PG.connect( dbname: dbname )
+      # Install UUID extension
+      @conn.exec(<<~SQL)
+        CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+      SQL
+      # Create memo table
+      @conn.exec(<<~SQL)
+        CREATE TABLE IF NOT EXISTS memos (
+          id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+          title    varchar(40) NOT NULL,
+          content  text NOT NULL
+        )
+      SQL
+      # Query memos
+      @conn.exec( "SELECT * FROM memos;" ) do |result|
+        result.each do |row|
+          @data[:memos].push symbolize_keys(row)
+        end
       end
-    else
-      File.open(path, 'w') do |file|
-        @data = { memos: [] }
-        JSON.dump(@data, file)
-      end
+    rescue => e
+      p e
     end
   end
 
   def add_memo(memo)
-    @data[:memos] << memo
-    File.open(@data_path, 'w') do |file|
-      JSON.dump(@data, file)
-    end
+    is_added = false
+    is_added = add_sql(memo[:id], memo[:title], memo[:content])
+    @data[:memos] << memo if is_added == true
+    is_added
   end
 
   def find(id)
@@ -33,6 +47,7 @@ class DB
     nil
   end
 
+  # TODO It must to be transaction
   def update(id, new_memo)
     is_updated = false
     @data[:memos].map! do |memo|
@@ -43,30 +58,65 @@ class DB
         memo
       end
     end
-    return nil unless is_updated
-
-    File.open(@data_path, 'w') do |file|
-      JSON.dump(@data, file)
-    end
-    @data
+    return false unless is_updated
+    update_sql(id, new_memo[:title], new_memo[:content])
   end
 
+  # TODO It must to be transaction
   def delete(id)
-    is_success = @data[:memos].filter! do |memo|
+    is_deleted = @data[:memos].filter! do |memo|
       memo[:id] != id
     end
-    unless is_success.nil?
-      File.open(@data_path, 'w') do |file|
-        JSON.dump(@data, file)
-      end
+    unless is_deleted.nil?
+      is_deleted = delete_sql id
     end
-    is_success
+    is_deleted
   end
 
   def reset
-    File.open(@data_path, 'w') do |file|
+    begin
+      @conn.exec("DELETE FROM memos;")
       @data = { memos: [] }
-      JSON.dump(@data, file)
+      true
+    rescue => e
+      p e
+      false
+    end
+  end
+
+  private
+
+  def symbolize_keys(hash)
+    hash.map{|k,v| [k.to_sym, v] }.to_h
+  end
+
+  def add_sql(id, title, content)
+    begin
+      @conn.exec("INSERT INTO memos VALUES(uuid('{' || '#{id}' || '}'), '#{title}', '#{content}');")
+      true
+    rescue => e
+      p e
+      false
+    end
+  end
+
+  def update_sql(id, title, content)
+    begin
+      @conn.exec("UPDATE memos SET title = '#{title}', content = '#{content}' WHERE id = uuid('{' || '#{id}' || '}');")
+      true
+    rescue => e
+      p e
+      false
+    end
+  end
+
+  def delete_sql id
+    begin
+      @conn.exec("DELETE FROM memos WHERE id = uuid('{' || '#{id}' || '}');")
+      true
+    rescue => e
+      p e
+      false
     end
   end
 end
