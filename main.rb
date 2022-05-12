@@ -6,6 +6,7 @@ require 'securerandom'
 require './extensions/validation'
 require './extensions/html_escape'
 require './db'
+require 'cgi'
 
 enable :sessions
 
@@ -38,9 +39,9 @@ post '/' do
   content = params[:content]
   is_sccuess = db.add_memo({ id: SecureRandom.uuid, title: title, content: content })
   if is_sccuess == false
-    session[:message] = "#{title}の保存に失敗しました"
+    session[:message] = "#{CGI.escapeHTML(title)}の保存に失敗しました"
   else
-    session[:message] = "#{title}の保存に成功しました"
+    session[:message] = "#{CGI.escapeHTML(title)}の保存に成功しました"
   end
   redirect '/'
 end
@@ -101,7 +102,7 @@ put '/:id' do
   session[:message] = if db.update(id, { id: id, title: new_title, content: new_content }) == false
                         'メモの更新に失敗しました'
                       else
-                        "#{id}を更新しました"
+                        "#{CGI.escapeHTML(new_title)}を更新しました"
                       end
   redirect '/'
 end
@@ -112,7 +113,7 @@ delete '/:id' do
   session[:message] = if db.delete(id) == false
                         'メモが見つかりませんでした'
                       else
-                        "#{id}を削除しました"
+                        'メモを削除しました'
                       end
   redirect '/'
 end
