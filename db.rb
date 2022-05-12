@@ -92,7 +92,23 @@ class DB
 
   def add_sql(id, title, content)
     begin
-      @conn.exec("INSERT INTO memos VALUES(uuid('{' || '#{id}' || '}'), '#{title}', '#{content}');")
+      @conn.exec_params(
+        "INSERT INTO memos VALUES(uuid($1::text), $2::varchar, $3::text);",
+        [
+          {
+            value: id,
+            format: 0
+          },
+          {
+            value: title,
+            format: 0
+          },
+          {
+            value: content,
+            format: 0
+          }
+        ]
+      )
       true
     rescue => e
       p e
@@ -102,7 +118,23 @@ class DB
 
   def update_sql(id, title, content)
     begin
-      @conn.exec("UPDATE memos SET title = '#{title}', content = '#{content}' WHERE id = uuid('{' || '#{id}' || '}');")
+      @conn.exec_params(
+        "UPDATE memos SET title = $2::varchar, content = $3::text WHERE id = uuid($1::text);",
+        [
+          {
+            value: id,
+            format: 0
+          },
+          {
+            value: title,
+            format: 0
+          },
+          {
+            value: content,
+            format: 0
+          }
+        ]
+    )
       true
     rescue => e
       p e
@@ -112,7 +144,15 @@ class DB
 
   def delete_sql id
     begin
-      @conn.exec("DELETE FROM memos WHERE id = uuid('{' || '#{id}' || '}');")
+      @conn.exec_params(
+        "DELETE FROM memos WHERE id = uuid($1::text);",
+        [
+          {
+            value: id,
+            format: 0
+          }
+        ]
+      )
       true
     rescue => e
       p e
