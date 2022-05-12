@@ -47,7 +47,6 @@ class DB
     nil
   end
 
-  # TODO It must to be transaction
   def update(id, new_memo)
     is_updated = false
     @data[:memos].map! do |memo|
@@ -62,7 +61,6 @@ class DB
     update_sql(id, new_memo[:title], new_memo[:content])
   end
 
-  # TODO It must to be transaction
   def delete(id)
     is_deleted = @data[:memos].filter! do |memo|
       memo[:id] != id
