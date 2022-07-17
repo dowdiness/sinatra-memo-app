@@ -34,9 +34,8 @@ class DB
   end
 
   def add_memo(memo)
-    is_added = false
     is_added = add_sql(memo[:id], memo[:title], memo[:content])
-    @data[:memos] << memo if is_added == true
+    @data[:memos] << memo if is_added
     is_added
   end
 
