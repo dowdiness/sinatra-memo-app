@@ -38,10 +38,10 @@ post '/' do
   title = params[:title]
   content = params[:content]
   is_sccuess = db.add_memo({ id: SecureRandom.uuid, title: title, content: content })
-  if is_sccuess == false
-    session[:message] = "#{CGI.escapeHTML(title)}の保存に失敗しました"
-  else
+  if is_sccuess
     session[:message] = "#{CGI.escapeHTML(title)}の保存に成功しました"
+  else
+    session[:message] = "#{CGI.escapeHTML(title)}の保存に失敗しました"
   end
   redirect '/'
 end
@@ -110,10 +110,10 @@ end
 delete '/:id' do
   id = params[:id]
 
-  session[:message] = if db.delete(id) == false
-                        'メモが見つかりませんでした'
-                      else
+  session[:message] = if db.delete(id)
                         'メモを削除しました'
+                      else
+                        'メモが見つかりませんでした'
                       end
   redirect '/'
 end
